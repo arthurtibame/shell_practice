@@ -1,3 +1,4 @@
+#!/bin/bash
 unformat_folder=$1
 search_dir=$(pwd)/$1
 output_dir=$(pwd)/output
