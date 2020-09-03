@@ -11,18 +11,18 @@ if [ $# -eq 0 ]; then
 fi
 
 
-#STEP0. extract file
+#STEP1. extract file
 mkdir $1 && \
 tar -xvzf $1.tar -C $search_dir
 
-#STEP1. format json file in first argument
+#STEP2. format json file in first argument
 python3 $(pwd)/utils/json_formatter.py $1
 
-#STEP2. prepare output dir
+#STEP3. prepare output dir
 [ ! -d "$output_dir" ] && mkdir -p "$output_dir"
 
 
-#STEP3. filter all json files
+#STEP4. filter all json files
 function lsjson (){
 	for entry in "$search_dir"/*.json
 	
@@ -46,8 +46,8 @@ jq -r '.[] | select(.cars[].cm=="livina_2014") | [.iot_id, .timestamp, .gps_time
 
 lsjson
 
-#STEP4. clean empty csv files
+#STEP5. clean empty csv files
 find $output_dir -size  0 -print -delete
 
-#STEP5. remove dir
+#STEP6. remove dir
 rm -rf $1
