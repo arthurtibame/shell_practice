@@ -1,4 +1,6 @@
 #!/bin/bash
+#author: arthurtibame
+#github: https://github.com/arthurtibame
 
 unformat_folder=$1
 search_dir=$(pwd)/$1
