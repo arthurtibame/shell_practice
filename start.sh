@@ -13,7 +13,7 @@ fi
 
 #STEP0. extract file
 mkdir $1 && \
-tar -xvzf $1.tar -C $search_dir
+tar -xvzf $1.tar -C $search_dir > /dev/null 2>&1
 
 #STEP1. format json file in first argument
 python3 $(pwd)/utils/json_formatter.py $1
@@ -36,16 +36,18 @@ function filter_json2csv (){
 		jq -r '.[] | select(.cars[].cm=="fit_2015") | [.iot_id, .timestamp, .gps_time, .lat, .lon, .cars[].cm, .cars[].cm_conf, .cars[].lp, .cars[].lp_cof, .cars[].xywh[0], .cars[].xywh[1], .cars[].xywh[2], .cars[].xywh[3], .cars[].color] | @csv' ${entry} > $(pwd)/output/${entry##*/}-fit.csv
 		jq -r '.[] | select(.cars[].cm=="livina_2014") | [.iot_id, .timestamp, .gps_time, .lat, .lon, .cars[].cm, .cars[].cm_conf, .cars[].lp, .cars[].lp_cof, .cars[].xywh[0], .cars[].xywh[1], .cars[].xywh[2], .cars[].xywh[3], .cars[].color] | @csv' ${entry} > $(pwd)/output/${entry##*/}livina.csv	
 	done
+	echo "Filtered json and saved to csv file"
 }
 
 filter_json2csv
 #STEP4. clean empty csv files
-find $output_dir -size  0 -print -delete
+find $output_dir -size  0 -print -delete > /dev/null 2>&1
 #STEP5. remove dir
 rm -rf $1
 
 function all_cars(){
-	ALL_CARS=("vios" "yaris" "tida" "rav4" "crv" "altis" "fit" "livina")
+	# get all cars from cars.txt to list 
+	IFS=$'\r\n' GLOBIGNORE='*' command eval  'ALL_CARS=($(cat $(pwd)/utils/cars.txt))'	
 	printf "%s\n" ${ALL_CARS[*]}
 }
 
@@ -54,8 +56,8 @@ mkdir $1;
 #STEP6. combine .csv	
 for car in $(all_cars);
 do
-	ls -v $output_dir/*$car.csv | xargs cat >> $1/$car.csv
+	ls -v $output_dir/*$car.csv | xargs cat >> $1/$car.csv ||  echo "catch $car"
 done
-find $1 -size  0 -print -delete
+find $1 -size  0 -print -delete > /dev/null 2>&1
 
 rm -rf $output_dir
