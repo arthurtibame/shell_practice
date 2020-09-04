@@ -63,3 +63,7 @@ done
 find $1 -size  0 -print -delete > /dev/null 2>&1
 
 rm -rf $output_dir
+
+
+#STEP7. push to hadoop 
+hadoop fs -put $search_dir hdfs://master/user/spark/test_shell
